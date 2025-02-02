@@ -1,34 +1,23 @@
 import { NextResponse } from "next/server"
-import bcrypt from "bcrypt"
-import pool from "@/lib/db"
+import { loginUser } from "@/lib/auth"
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const { username, password } = await request.json()
+    const { username, password } = await req.json()
+    const user = await loginUser(username, password)
 
-    // Find the user
-    const result = await pool.query("SELECT * FROM users WHERE username = $1", [username])
-
-    if (result.rows.length === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    if (user) {
+      return NextResponse.json({ success: true, user })
+    } else {
+      return NextResponse.json({ success: false, error: "Invalid credentials" }, { status: 401 })
     }
-
-    const user = result.rows[0]
-
-    // Check the password
-    const passwordMatch = await bcrypt.compare(password, user.password_hash)
-
-    if (!passwordMatch) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 401 })
-    }
-
-    // If login is successful, return user data (excluding the password hash)
-    const { password_hash, ...userData } = user
-
-    return NextResponse.json(userData)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Login error:", error)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    let errorMessage = "Login failed"
+    if (error instanceof Error) {
+      errorMessage = error.message
+    }
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 })
   }
 }
 

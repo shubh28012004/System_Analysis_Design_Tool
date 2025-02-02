@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@auth/core": "latest",
+    "@auth/core": "^0.37.4",
     "@auth/pg-adapter": "latest",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
@@ -58,7 +58,7 @@
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "^14.2.23",
-    "next-auth": "latest",
+    "next-auth": "^4.24.7",
     "next-themes": "latest",
     "nodemailer": "latest",
     "pg": "latest",
