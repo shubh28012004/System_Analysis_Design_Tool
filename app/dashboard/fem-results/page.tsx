@@ -3,106 +3,108 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ThreeDViewer } from "@/components/three-d-viewer"
-import { Progress } from "@/components/ui/progress"
-import { Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-
-const sampleData = [
-  { force: 0, displacement: 0 },
-  { force: 1, displacement: 0.2 },
-  { force: 2, displacement: 0.4 },
-  { force: 3, displacement: 0.8 },
-  { force: 4, displacement: 1.2 },
-  { force: 5, displacement: 2.0 },
-]
+import { Loader2, Upload } from "lucide-react"
+import Image from "next/image"
 
 export default function FEMResultsPage() {
-  const [running, setRunning] = useState(false)
-  const [progress, setProgress] = useState(0)
-  const [force, setForce] = useState("1000")
-  const [constraints, setConstraints] = useState("fixed")
-  const [results, setResults] = useState<{ force: number; displacement: number }[]>([])
+  const [file, setFile] = useState<File | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [resultImage, setResultImage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const runAnalysis = () => {
-    setRunning(true)
-    setProgress(0)
-    setResults([])
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setFile(event.target.files[0])
+    }
+  }
 
-    // Simulate analysis progress
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setRunning(false)
-          setResults(sampleData)
-          return 100
-        }
-        return prev + 5
+  const runFEMAnalysis = async () => {
+    if (!file) {
+      setError("Please upload a file first.")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    const formData = new FormData()
+    formData.append("file", file)
+
+    try {
+      const response = await fetch("https://48a7-223-30-20-253.ngrok-free.app/fem_analysis/", {
+        method: "POST",
+        body: formData,
       })
-    }, 200)
+
+      if (!response.ok) {
+        throw new Error("FEM analysis failed")
+      }
+
+      const data = await response.json()
+      if (data.error) {
+        throw new Error(data.error)
+      }
+
+      setResultImage(`data:image/png;base64,${data.image}`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr,400px]">
       <Card>
         <CardHeader>
-          <CardTitle>FEM Results</CardTitle>
+          <CardTitle>FEM Analysis Results</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="aspect-square w-full h-[500px]">
-            <ThreeDViewer />
-          </div>
+          {resultImage ? (
+            <div className="aspect-square w-full h-[500px] relative">
+              <Image
+                src={resultImage || "/placeholder.svg"}
+                alt="FEM Analysis Result"
+                layout="fill"
+                objectFit="contain"
+              />
+            </div>
+          ) : (
+            <div className="aspect-square w-full h-[500px] flex items-center justify-center bg-muted text-muted-foreground">
+              No analysis results yet
+            </div>
+          )}
         </CardContent>
       </Card>
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Analysis Parameters</CardTitle>
+            <CardTitle>Upload Model</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="force">Applied Force (N)</Label>
-              <Input id="force" type="number" value={force} onChange={(e) => setForce(e.target.value)} />
+              <Label htmlFor="model-file">STL File</Label>
+              <Input id="model-file" type="file" accept=".stl" onChange={handleFileChange} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="constraints">Constraints</Label>
-              <Input id="constraints" value={constraints} onChange={(e) => setConstraints(e.target.value)} />
-            </div>
-            {running && (
-              <div className="space-y-2">
-                <Progress value={progress} />
-                <p className="text-sm text-muted-foreground">Running analysis... {progress}%</p>
-              </div>
-            )}
-            <Button className="w-full" onClick={runAnalysis} disabled={running}>
-              {running && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Run FEM Analysis
+            {file && <p className="text-sm text-muted-foreground">Selected file: {file.name}</p>}
+            <Button className="w-full" onClick={runFEMAnalysis} disabled={isLoading || !file}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Running Analysis...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Run FEM Analysis
+                </>
+              )}
             </Button>
+            {error && <p className="text-sm text-red-500">{error}</p>}
           </CardContent>
         </Card>
-        {results.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Analysis Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={results}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="force" label={{ value: "Force (N)", position: "bottom" }} />
-                    <YAxis label={{ value: "Displacement (mm)", angle: -90, position: "left" }} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="displacement" stroke="#8884d8" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   )
