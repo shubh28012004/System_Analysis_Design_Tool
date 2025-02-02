@@ -1,107 +1,103 @@
-Advanced Structural Analysis and Design Tool
+# Advanced Structural Analysis and Design Tool
 
-Overview
+## Overview
+The **Advanced Structural Analysis and Design Tool** is a web-based platform that integrates **Finite Element Method (FEM) analysis** and **structural design capabilities** for **2D and 3D meshes**. Users can **define and design 3D meshes** using **Three.js**, perform **2D FEM simulations** with **Scikit-FEM**, and visualize the results through an **interactive web interface**.
 
-This tool provides Finite Element Method (FEM) analysis and structural design capabilities for 2D and 3D meshes. Users can define and design 3D meshes using Three.js, perform 2D FEM simulations with Scikit-FEM, and visualize the results through a web-based interactive interface.
+## Features
+- **3D Mesh Definition** – Interactive mesh modeling with **Three.js**.
+- **2D FEM Analysis** – Numerical simulation and structural analysis using **Scikit-FEM**.
+- **FastAPI Backend** – Manages FEM computations, geometry processing, and API calls.
+- **REST API Integration** – Ensures seamless communication between the frontend and backend.
+- **Google Authentication** – Secure login via **Google OAuth**.
+- **Web-Based Deployment** – Hosted on **Vercel** for easy access.
+- **Comprehensive User Support** – Includes an **FAQ section** and a **How-To-Use Guide**.
+- **Footer Navigation** – Enhances user experience with structured navigation.
 
-Features
-	•	3D Mesh Definition – Users can define and design a mesh interactively using Three.js.
-	•	2D FEM Analysis – Uses Scikit-FEM for numerical simulation and structural analysis.
-	•	FastAPI Backend – Handles FEM computations, geometry processing, and API calls.
-	•	REST API Integration – Facilitates seamless communication between frontend and backend.
-	•	Google Login – Secure authentication using Google OAuth.
-	•	Web-Based Deployment – Hosted on Vercel for easy accessibility.
-	•	FAQ and How-To-Use Guide – Provides user assistance and troubleshooting.
-	•	Footer Section – Improves navigation across the website.
+## Tech Stack
+### **Frontend:**
+- **Three.js** – 3D mesh modeling and visualization.
+- **React.js** – User interface development.
+- **Vercel** – Hosting and deployment.
 
-Tech Stack
+### **Backend:**
+- **Scikit-FEM** – 2D FEM analysis.
+- **FastAPI** – API development.
+- **REST API** – Backend communication.
+- **ngrok** – Exposes backend APIs for remote access.
 
-Frontend:
-	•	Three.js – 3D mesh modeling and visualization
-	•	React.js – User interface development
-	•	Vercel – Deployment
+### **Authentication:**
+-  Secure authentication mechanism.
 
-Backend:
-	•	Scikit-FEM – 2D FEM analysis
-	•	FastAPI – API development
-	•	REST API – Backend communication
-	•	ngrok – Exposing backend APIs
-
-Authentication:
-	•	Google OAuth – Secure login
-
-Installation and Setup
-
-1. Clone the Repository
-
+## Installation and Setup
+### **1. Clone the Repository**
+```bash
 git clone <repository-url>
 cd <repository-folder>
+```
 
-2. Set Up a Virtual Environment
-
+### **2. Set Up a Virtual Environment**
+```bash
 python -m venv .venv
 source .venv/bin/activate  # For Mac/Linux
-.venv\Scripts\activate      # For Windows
+.venv\Scripts\activate    # For Windows
+```
 
-3. Install Dependencies
-
+### **3. Install Dependencies**
+```bash
 pip install -r requirements.txt
+```
 
-4. Start the Backend (FastAPI Server)
-
+### **4. Start the Backend (FastAPI Server)**
 Run the FastAPI server locally:
-
+```bash
 uvicorn main:app --reload
-
-Expose the backend using ngrok:
-
+```
+Expose the backend using **ngrok**:
+```bash
 ngrok http 8000
+```
+Copy the generated public URL and configure it in the frontend.
 
-Copy the generated public URL and use it in the frontend.
-
-5. Start the Frontend
-
+### **5. Start the Frontend**
 Navigate to the frontend directory:
-
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
-Usage
-	1.	Login with Google – Secure authentication to access the platform.
-	2.	Define Mesh – Use the web interface to create a 3D mesh using Three.js.
-	3.	Perform FEM Analysis – The backend processes 2D FEM simulations with Scikit-FEM.
-	4.	Visualize Results – View results in an interactive graphical interface.
-	5.	Use Help Resources – The FAQ page and How-To-Use Guide provide support.
+## Usage
+1. **Login with Google** – Secure authentication to access the platform.
+2. **Define Mesh** – Create a **3D mesh** interactively using **Three.js**.
+3. **Perform FEM Analysis** – Run **2D FEM simulations** via the backend.
+4. **Visualize Results** – View **analysis results** in an interactive graphical interface.
+5. **Access Support** – Use the **FAQ section** and **How-To-Use Guide** for assistance.
 
-API Endpoints (FastAPI Backend via ngrok)
+## API Endpoints (FastAPI Backend via ngrok)
+| Method | Endpoint         | Description                          |
+|--------|-----------------|--------------------------------------|
+| **POST** | `/upload-mesh/` | Uploads the mesh for processing    |
+| **GET**  | `/analyze-fem/` | Runs FEM analysis on the mesh      |
+| **GET**  | `/get-results/` | Retrieves FEM simulation results   |
+| **POST** | `/login/`      | Google OAuth authentication        |
 
-Method	Endpoint	Description
-POST	/upload-mesh/	Uploads the mesh for processing
-GET	/analyze-fem/	Runs FEM analysis on the uploaded mesh
-GET	/get-results/	Fetches the simulation results
-POST	/login/	Google OAuth authentication
+## Deployment
+### **Frontend Deployment (Vercel)**
+1. Push the frontend code to GitHub.
+2. Link the repository with **Vercel**.
+3. Deploy directly from the **Vercel Dashboard**.
 
-Deployment
-
-Frontend Deployment (Vercel)
-	1.	Push the frontend code to GitHub.
-	2.	Link the repository with Vercel.
-	3.	Deploy directly from Vercel Dashboard.
-
-Backend Deployment
-
-The backend is exposed using ngrok, ensuring accessibility without manual server hosting.
-
-To start ngrok automatically on system boot, use:
-
+### **Backend Deployment**
+The backend is exposed using **ngrok**, allowing remote access without manual server hosting.
+To start **ngrok** automatically on system boot, use:
+```bash
 ngrok http 8000 --region=<preferred-region>
+```
 
-Future Improvements
-	•	Extend FEM analysis to 3D models
-	•	Implement real-time structural optimization
-	•	Support additional export formats for FEM results
+## Future Improvements
+- Extend **FEM analysis** to **3D models**.
+- Implement **real-time structural optimization**.
+- Support additional **export formats** for FEM results.
 
-License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+
